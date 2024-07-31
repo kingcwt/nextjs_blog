@@ -1,0 +1,1331 @@
+---
+title: Core react interview questions
+date: '2024-07-25'
+tags: ['react', 'interview', 'web']
+draft: false
+summary: react interview questions
+---
+<TOCInline toc={props.toc} exclude="Introduction" />
+
+## 1. 什么是React?
+
+React（又名 React.js 或 ReactJS）是一个开源前端 JavaScript 库，用于构建可组合的用户界面，尤其是单页应用程序。它用于以声明式方法处理基于组件的 Web 和移动应用程序的视图层。
+
+## 2. React进化的历史是怎样的？
+
+React由Facebook的软件工程师<a href='https://github.com/jordwalke' target="_blank">Jordan Walke</a>建立，他发布了一个名为“FaxJS”的React早期原型。 他受到XHP（一个PHP的HTML组件库）的影响。于2011年首次部署在Facebook的News Feed上，随后于2012年部署在Instagram上。 于2013年5月在JSConf US宣布开放源代码。
+
+React Native 于2015年2月在Facebook的React Conf上宣布，并于2015年3月开放源代码，支持使用React进行原生Android、iOS和UWP开发。
+
+2017年4月18日，Facebook发布了React Fiber，这是一套新的内部渲染算法，与React的旧渲染算法Stack不同。React Fiber将成为React工具库未来任何改进和功能开发的基础。[已过时] 使用React程序撰写的实际语法不会改变；只有语法的执行方式发生了变化。 React的旧渲染系统Stack是在不了解系统对动态变化的关注点的时候开发的。Stack绘制复杂动画的速度很缓慢，例如，试图在一个块中完成所有动画。Fiber将动画分解为可以分布在多个帧上的片段。同样，一个页面的结构可以分解为可以单独维护和更新的片段。JavaScript函数和虚拟DOM对像被称为“fibers”，每个都可以单独操作和更新，从而实现更流畅的屏幕渲染。
+
+2017年9月26日，React 16.0向公众发布。
+
+2019年2月16日，React 16.8向公众发布。 该版本导入了React Hooks。
+
+2020年8月10日，React团队宣布了React v17.0的第一个候选版本，值得关注的是第一个主要版本没有对面向React开发人员的API进行重大更改
+
+## 3. React 的主要特性是什么？
+
+React 的主要特性包括：
+
+- 使用JSX语法，这是 JS 的语法扩展，允许开发人员在 JS 代码中编写 HTML。
+- 考虑到真实 DOM 操作成本高昂，它使用虚拟 DOM而不是真实 DOM。
+- 支持服务器端渲染，这对搜索引擎优化（SEO）很有用。
+- 遵循单向或单向数据流或数据绑定。
+- 使用可重复使用/可组合的UI 组件来开发视图。
+
+## 4. 什么是 JSX？
+
+JSX代表JavaScript XML，它是 ECMAScript 的类似 XML 的语法扩展。基本上，它只是为函数提供了语法糖`React.createElement(type,props,...children)`，为我们提供了 JavaScript 的表达能力以及类似 HTML 的模板语法。
+
+在下面的例子中，`<h1>`标签内的文本作为 JavaScript 函数返回给渲染函数。
+
+```jsx
+export default function App() {
+  return <h1 className="greeting">{"Hello, this is a JSX Code!"}</h1>;
+}
+```
+
+如果你不使用 JSX 语法，则相应的 JavaScript 代码应按如下方式编写
+
+```jsx
+import { createElement } from "react";
+
+export default function App() {
+  return createElement(
+    "h1",
+    { className: "greeting" },
+    "Hello, this is a JSX Code!"
+  );
+}
+```
+
+## 5. 元素 (Element) 和 组件 (Component) 有什么区别？
+
+元素是一个简单的对象，它以 DOM 节点或其他组件的形式描述您想要在屏幕上显示的内容。元素可以在其 props 中包含其他元素。创建 React 元素的成本很低。元素一旦创建，就无法改变。
+
+React Element 的 JavaScript 表示（没有 JSX）如下：
+
+```jsx
+const element = React.createElement("div", { id: "login-btn" }, "Login");
+```
+
+这个元素可以使用 JSX 简化
+
+```jsx
+<div id="login-btn">Login</div>
+```
+
+上述`React.createElement()`函数返回一个如下对象：
+
+```jsx
+{
+  type: 'div',
+  props: {
+    children: 'Login',
+    id: 'login-btn'
+  }
+}
+```
+
+最后，该元素使用 呈现到 DOM`ReactDOM.render()`
+
+而组件可以用几种不同的方式声明。它可以是具有render()方法的类，也可以定义为函数。无论哪种情况，它都以 props 作为输入，并返回 JSX 树作为输出：
+
+```jsx
+const Button = ({ handleLogin }) => (
+  <div id={"login-btn"} onClick={handleLogin}>
+    Login
+  </div>
+);
+```
+
+然后 JSX 被转换成React.createElement()函数树：
+
+```jsx
+const Button = ({ handleLogin }) =>
+  React.createElement(
+    "div",
+    { id: "login-btn", onClick: handleLogin },
+    "Login"
+  );
+```
+
+## 6. 如何在 React 中创建组件？
+
+组件是 React 中创建用户界面 (UI) 的构建块。有两种创建组件的方法。
+
+1 函数组件：这是创建组件最简单的方法。这些是纯 JavaScript 函数，它们接受 props 对象作为唯一参数，并返回 React 元素以呈现输出：
+
+```jsx
+function Greeting({ message }) {
+  return <h1>{`Hello, ${message}`}</h1>;
+}
+```
+
+2 类组件：你也可以使用 ES6 类来定义组件。上面的函数组件可以写成类组件：
+
+```jsx
+class Greeting extends React.Component {
+  render() {
+    return <h1>{`Hello, ${this.props.message}`}</h1>;
+  }
+}
+```
+
+## 7. 何时使用类组件而不是函数组件？
+
+在添加 Hooks（即 React 16.8 及以上版本）后，始终建议在 React 中使用函数组件而不是类组件。因为您也可以在函数组件中使用仅在类组件中可用的状态、生命周期方法和其他功能。
+
+- 使用类组件
+  1 如果您需要某个 React 功能，但其函数组件等效项尚未出现，例如错误边界。
+  2 在需要向后兼容或与旧代码集成的场景中
+
+- 使用函数组件：
+  1 如果您不需要状态或生命周期方法，并且您的组件纯粹是展示性的。
+  2 为了简单性、可读性和现代代码实践，特别是使用 React Hooks 来实现状态和副作用。
+
+> 建议使用函数组件而不是类组件
+
+上述库中的错误边界的使用非常简单。
+
+> 使用 react-error-boundary 时请注意： ErrorBoundary 是一个客户端组件。您只能向其传递可序列化的 props，或在具有指令的文件中使用它"use client";。
+
+```jsx
+"use client";
+
+import { ErrorBoundary } from "react-error-boundary";
+
+<ErrorBoundary fallback={<div>Something went wrong</div>}>
+  <ExampleApplication />
+</ErrorBoundary>;
+```
+
+## 8. 什么是纯组件？
+
+纯组件是指对相同状态和 props 渲染相同输出的组件。在函数组件中，您可以通过`React.memo()`围绕组件的记忆化API来实现这些纯组件。此API通过使用浅比较来比较先前的props和新的 props，从而防止不必要的重新渲染。因此，它将有助于性能优化。
+但同时，它不会将之前的状态与当前状态进行比较，因为函数组件本身默认在你再次设置相同状态时防止不必要的渲染。
+记忆组件的语法表示如下所示，
+
+```jsx
+const MemoizedComponent = memo(SomeComponent, arePropsEqual?);
+```
+
+下面是子组件（即 EmployeeProfile）如何防止父组件（即 EmployeeRegForm）传递的相同props重新渲染的示例。
+
+```jsx
+import { memo, useState } from "react";
+
+const EmployeeProfile = memo(function EmployeeProfile({ name, email }) {
+  return (
+    <>
+      <p>Name:{name}</p>
+      <p>Email: {email}</p>
+    </>
+  );
+});
+export default function EmployeeRegForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  return (
+    <>
+      <label>
+        Name: <input value={name} onChange={(e) => setName(e.target.value)} />
+      </label>
+      <label>
+        Email:{" "}
+        <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      </label>
+      <hr />
+      <EmployeeProfile name={name} />
+    </>
+  );
+}
+```
+
+在上面的代码中，email属性尚未传递给子组件。因此，email属性更改不会引发任何重新渲染。
+
+注意： React.memo()是高阶组件。
+
+## 9. React 中的状态是什么?
+
+组件的状态是一个对象，其中包含一些可能在组件生命周期内发生变化的信息。重点是，只要状态对象发生变化，组件就会重新渲染。始终建议使我们的状态尽可能简单，并尽量减少有状态组件的数量。
+
+<img src='../../../public//state.jpg' />
+
+让我们以具有状态的User组件为例message。这里，useState钩子已用于向 User 组件添加状态，并返回包含当前状态和更新它的函数的数组。
+
+```jsx
+import { useState } from "react";
+
+function User() {
+  const [message, setMessage] = useState("Welcome to React world");
+
+  return (
+    <div>
+      <h1>{message}</h1>
+    </div>
+  );
+}
+```
+
+每当 React 调用你的组件或访问useState钩子时，它都会为你提供该特定渲染的状态快照。
+
+## 10. React 中的 props 是什么?
+
+Props是组件的输入。它们是单个值或包含一组值的对象，这些值在创建时传递给组件，类似于 HTML 标签属性。在这里，数据从父组件传递到子组件。
+
+可以使用 ES6（ECMAScript 2015）的析构功能直接访问 props 对象的属性。当未指定 prop 值时，也可以回退到默认值。上面的子组件可以简化如下。
+
+```jsx
+const ChildComponent = ({ name, age, gender = "male" }) => {
+  return (
+    <div>
+      <p>{name}</p>
+      <p>{age}</p>
+      <p>{gender}</p>
+    </div>
+  );
+};
+```
+
+注意：`null`如果传递或值，则不会使用默认值`0`。即，仅当缺少`prop`值或`undefined`已传递值时才使用默认值。
+
+## 11. state 和 props 有什么区别?
+
+在 React 中，`state`和`props`都是普通的 JavaScript 对象，用于管理组件的数据，但它们的使用方式不同，并且具有不同的特点。
+
+实体state由组件本身管理，可以使用 setter（setState()用于类组件）函数进行更新。与`props`不同，`state`可以由组件修改，并用于管理组件的内部状态。此外，状态的更改会触发组件及其子组件的重新渲染。仅使用状态，组件无法实现可重复使用。
+
+另一方面，`props`（“props”的缩写）由其父组件传递给组件，并且是read-only，这意味着它们不能由自己的组件本身修改。此外，`props`可用于配置组件的行为并在组件之间传递数据。使用`props`可以使组件变得可重复使用。
+
+## 12. React 中的合成事件是什么?
+
+`SyntheticEvent`是浏览器原生事件的跨浏览器包装器。其API与浏览器原生事件相同，包括`stopPropagation()`和`preventDefault()`，但事件在所有浏览器上的运作方式相同。可以使用`nativeEvent`属性直接从合成事件访问原生事件。
+
+让我们以BookStore标题搜索组件为例，该组件能够获取所有原生事件属性
+
+```jsx
+function BookStore() {
+  function handleTitleChange(e) {
+    console.log("The new title is:", e.target.value);
+    // 'e' represents synthetic event
+    const nativeEvent = e.nativeEvent;
+    console.log(nativeEvent);
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  return <input name="title" onChange={handleTitleChange} />;
+}
+```
+
+## 13. 什么是内联条件表达式？
+
+您可以使用JS提供的if语句或三元表达式来有条件地渲染表达式。除了这些方法之外，您还可以将任何表达式嵌入JSX中，方法是将它们括在花括号中，然后跟上JS逻辑运算符`&&`。
+
+```jsx
+<h1>Hello!</h1>;
+{
+  messages.length > 0 && !isLogin ? (
+    <h2>You have {messages.length} unread messages.</h2>
+  ) : (
+    <h2>You don't have unread messages.</h2>
+  );
+}
+```
+
+## 14. 什么是“key”prop，以及在元素数组中使用它有什么好处？
+
+A是您在通过数组进行映射以呈现数据时应包含的一个特殊属性。Key prop帮助React识别哪些项目已更改、已添加或已删除。
+键在其兄弟中应该是唯一的。我们通常使用数据中的 ID 作为键：
+
+```js
+const todoItems = todos.map((todo) => <li key={todo.id}>{todo.text}</li>);
+```
+
+当你没有渲染项目的稳定 ID 时，你可以使用项目索引作为最后的手段：
+
+```jsx
+const todoItems = todos.map((todo, index) => <li key={index}>{todo.text}</li>);
+```
+
+- 1. 如果项目的顺序可能会发生变化，则不建议对键使用索引。这可能会对性能产生负面影响，并可能导致组件状态出现问题。
+- 2. 如果您将列表项提取为单独的组件，则在列表组件上应用键而不是li标签
+- 3. `key`如果列表项中不存在该道具，控制台中会出现一条警告消息
+- 4. 键属性接受字符串或数字，并在内部将其转换为字符串类型
+- 5. 不要像那样动态生成密钥`key={Math.random()}`。因为密钥永远不会在每次重新渲染和创建的 DOM 之间匹配。[使用uuid库生成唯一的密钥，也不要使用Math.random()]
+
+## 15. 什么是虚拟 DOM？
+
+> 虚拟DOM( VDOM)是真实DOM的内存表示。UI的表示保存在内存中并与“真实”DOM同步。这是在调用渲染函数和在UI上显示元素之间发生的一个步骤。这个过程称为`reconciliation`
+
+1. 虚拟DOM节点的结构：虚拟DOM节点通常是一个JavaScript对象，包含以下主要属性：
+
+```jsx
+{
+  type: 'div', // 或者是函数组件/类组件
+  props: {
+    className: 'container',
+    children: [...], // 子节点数组
+  },
+  key: null,
+  ref: null
+}
+```
+
+2. 创建虚拟DOM:
+
+- 使用JSX
+
+```jsx
+const element = <div className="container">Hello</div>;
+```
+
+- JSX会被Babel等工具转换为React.createElement()调用
+
+```jsx
+const element = React.createElement("div", { className: "container" }, "Hello");
+```
+
+3. Diffing算法[React使用启发式算法来高效地比较两棵虚拟DOM树]:
+
+- 同级比较：只比较同一层级的节点。
+- 类型不同则直接替换：如果节点类型改变，React会直接卸载旧节点，挂载新节点。
+- key属性：用于标识同一层级的子元素是否可复用。
+
+4. 协调过程（Reconciliation）:
+
+- 当状态或属性改变时，组件会重新渲染，生成新的虚拟DOM树。
+- React对比新旧虚拟DOM树，生成一系列最小化的更新操作。
+- 这些操作被收集到一个叫做"更新队列"的结构中。
+
+5. 批量更新[React会将多个更新操作批量处理，以减少对真实DOM的访问次数]:
+6. 渲染阶段和提交阶段:
+
+- 渲染阶段：计算变更，可以被中断。
+- 提交阶段：应用这些变更到DOM，这个过程是同步且不可中断的。
+
+7. React Fiber的实现:
+
+- Fiber是虚拟DOM的重新实现，它将渲染过程分解成小的工作单元。
+- 每个Fiber节点对应一个组件，包含了组件的状态、props、DOM信息等。
+- Fiber允许React暂停、恢复和复用渲染工作。
+
+8. 优化技巧:
+
+- 使用shouldComponentUpdate或React.memo来跳过不必要的渲染。
+- 使用不可变数据结构来简化比较过程。
+
+9. 虚拟DOM的内部表示:
+
+```jsx
+const fiber = {
+  type: 'div',
+  props: { className: 'container', children: [...] },
+  stateNode: null, // 指向真实DOM节点
+  return: parentFiber,
+  child: childFiber,
+  sibling: null,
+  alternate: null, // 指向旧的fiber，用于diff
+  effectTag: 'UPDATE', // 标记需要执行的DOM操作
+  // ... 其他属性
+};
+```
+
+10. 渲染到真实DOM:
+
+React最终会调用原生DOM API（如 document.createElement）来创建或更新真实DOM。
+
+对于Web环境，这通过ReactDOM.render()或ReactDOM.createRoot().render()完成。
+
+## 16. 虚拟DOM的工作原理及其相关细节:
+
+1. 虚拟DOM的本质
+   虚拟DOM本质上是一个轻量级的JavaScript对象,它是对真实DOM的一种抽象表示。每个虚拟DOM对象通常包含以下信息:
+
+- 标签名(tag name)
+- 属性(properties)
+- 子节点(children)
+  例如,一个简单的虚拟DOM对象可能看起来像这样:
+
+```jsx
+{
+  type: 'div',
+  props: {
+    className: 'container',
+    onClick: () => {}
+  },
+  children: [
+    {
+      type: 'p',
+      props: { className: 'text' },
+      children: ['Hello, World!']
+    }
+  ]
+}
+```
+
+2. 虚拟DOM的创建过程
+   当应用状态发生变化时,框架(如React)会重新调用渲染函数。这个函数返回新的虚拟DOM树。这个过程是快速且高效的,因为它只涉及JavaScript对象的创建和操作。
+3. Diff算法详解
+   Diff算法是虚拟DOM技术的核心,它负责比较两棵虚拟DOM树,找出需要更新的部分。这个算法通常遵循以下原则:
+   a) 同层比较: 只比较同一层级的节点,不会跨层级比较。
+   b) 类型比较: 如果节点类型改变,会直接替换整个子树。
+   c) Key属性: 使用key属性来标识列表中的元素,以优化对列表的diff操作。
+
+Diff算法的基本步骤如下:
+
+- 比较根节点: 如果类型不同,直接替换整个树。
+- 比较属性: 如果类型相同,更新变化的属性。
+- 比较子节点: 递归地对子节点进行diff。
+
+4. 批量更新
+   在完成diff操作后,框架会生成一系列最小化的DOM操作指令。这些指令会被批量执行,以减少浏览器重排(reflow)和重绘(repaint)的次数。
+5. 调和过程(Reconciliation)
+   在React中,整个更新过程被称为"调和"(Reconciliation)。这个过程不仅包括diff和更新,还包括组件生命周期的管理等。
+6. 虚拟DOM vs 直接操作DOM
+   虚拟DOM相比直接操作DOM有以下优势:
+
+- 减少DOM操作: 通过批量更新减少了实际DOM操作的次数。
+- 跨平台: 虚拟DOM是平台无关的,可以用于服务器端渲染或原生移动应用。
+- 声明式编程: 开发者只需关注状态的变化,而不是具体的DOM操作。
+
+7. 性能优化技巧
+   为了进一步提高虚拟DOM的性能,可以采用以下策略:
+
+- 使用PureComponent或React.memo来避免不必要的渲染。
+- 正确使用key属性,特别是在渲染列表时。
+- 使用不可变(immutable)数据结构来简化比较过程。
+
+## 17. React Fiber
+
+1. Fiber的本质
+   Fiber本质上是一个代表工作单元的JavaScript对象。每个React元素都对应一个Fiber节点。一个Fiber节点大致看起来是这样的:
+
+```jsx
+{
+  type: 'div',
+  key: null,
+  stateNode: null,
+  child: null,
+  sibling: null,
+  return: null,
+  pendingProps: {},
+  memoizedProps: {},
+  memoizedState: null,
+  updateQueue: null,
+  effectTag: 0,
+  nextEffect: null,
+  firstEffect: null,
+  lastEffect: null,
+  expirationTime: 0,
+  alternate: null,
+}
+```
+
+2. Fiber的主要目标
+   Fiber架构的主要目标是实现增量渲染,即能够将渲染工作分割成小的任务块并将其分散到多个帧中。
+3. Fiber树和工作原理
+   React维护两棵Fiber树:当前树和工作进行中树。当前树代表当前屏幕上显示的状态,而工作进行中树是我们构建的新树。
+
+工作过程大致如下:
+a) 开始渲染时,React创建一个根Fiber节点。
+b) 进入"render phase",遍历Fiber树,为每个节点执行工作。
+c) 完成"render phase"后,得到一个效果列表(Effect List)。
+d) 进入"commit phase",根据效果列表更新DOM。
+
+4. 调度和优先级
+   Fiber引入了任务优先级的概念。不同的更新可能有不同的优先级:
+
+- Synchronous: 必须同步完成的任务
+- Task:在当前事件循环结束之前完成
+- Animation: 在下一帧之前完成
+- High: 稍后完成,但保证在接下来的几帧内完成
+- Low: 可以推迟,但最终必须完成
+- Offscreen: 可以无限期推迟,直到有足够的空闲时间
+
+5. 时间分片
+   Fiber利用requestIdleCallback API(在React中使用自己的polyfill实现)来进行时间分片。这允许React在浏览器空闲时执行工作,从而不阻塞主线程。
+
+## 18. React 中的 Lifting State Up 是什么？
+
+当多个组件需要共享相同的变化数据时，建议将共享状态提升到它们最近的共同祖先。这意味着，如果两个子组件共享来自其父级的相同数据，则将状态移动到父级，而不是在两个子组件中维护本地状态。
+
+## 19. children 属性是什么？
+
+`children`是一个 prop，它允许您将组件作为数据传递给其他组件，就像您使用的任何其他 prop 一样。放置在组件的开始和结束标记之间的组件树将作为prop传递给该组件。
+
+children prop 的简单用法如下，
+
+```jsx
+function MyDiv({ children }){
+    return (
+      <div>
+        {children}
+      </div>;
+    );
+}
+
+export default function Greeting() {
+  return (
+    <MyDiv>
+      <span>{"Hello"}</span>
+      <span>{"World"}</span>
+    </MyDiv>
+  );
+}
+```
+
+## 20. React中的Reconciliation是什么？
+
+React中的Reconciliation是React的核心概念之一，它负责将React应用程序的状态和UI树映射到真实的DOM节点上。React的Reconciliation算法是一个递归的算法，它比较新旧树的节点，并根据差异更新DOM节点。
+
+1. 定义：Reconciliation是React用来比较新旧虚拟DOM树，确定需要进行哪些实际DOM更新的过程
+2. 目的: 提高性能，最小化对实际DOM的操作
+3. 工作原理:
+
+- 当组件的状态或属性改变时，React会创建一个新的虚拟DOM树
+- React然后将这个新树与旧的虚拟DOM树进行比较
+- 通过这个比较过程，React确定哪些部分需要更新
+
+4. 主要策略:
+
+- 不同类型的元素会产生不同的树
+- 开发者可以通过key属性来暗示哪些子元素在不同渲染中是稳定的
+
+5. Diffing算法: React使用启发式算法来高效地比较树，时间复杂度从O(n^3)优化到O(n)
+
+### 具体比较策略
+
+1. 元素类型比较:
+
+- 如果根元素类型不同，React 会拆除旧树，构建新树。
+- 例如，从 `<div>` 到 `<span>`，`<Button>` 到 `<div>` 等
+
+2. DOM 元素比较:
+
+- 对于相同类型的 DOM 元素，React 只更新改变的属性
+
+3. 组件元素比较:
+
+- 对于相同类型的组件元素，React 更新组件实例的 props，并调用 componentDidUpdate 生命周期方法
+
+4. 子元素递归:
+
+- 默认情况下，React 会递归 DOM 节点的子元素
+
+5. Keys的使用:
+
+- 当子元素拥有 key 时，React 使用 key 来匹配原有树上的子元素和新树上的子元素
+
+### 优化 Reconciliation 过程 (React 17+):
+
+1. 使用 React.memo 代替 PureComponent:
+
+```jsx
+const MyComponent = React.memo(function MyComponent(props) {
+  // 组件逻辑
+});
+```
+
+2. 使用 useMemo 和 useCallback:
+
+- useMemo 用于缓存计算结果
+- useCallback 用于缓存函数
+
+```jsx
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+const memoizedCallback = useCallback(() => doSomething(a, b), [a, b]);
+```
+
+3. 使用 useReducer 处理复杂状态逻辑:
+
+- 可以帮助将状态更新逻辑从组件中分离出来
+
+```jsx
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+4. 合理使用 Context:
+
+- 使用 Context 可以避免不必要的 prop drilling，但过度使用可能导致性能问题
+- 考虑将 context 值的计算逻辑移到 provider 组件中
+
+5. 使用 useRef 保存不需要触发重新渲染的值:
+
+```jsx
+const prevProps = useRef();
+```
+
+6. 慎用 useEffect:
+
+- 正确设置依赖数组，避免不必要的效果执行
+- 考虑使用 useLayoutEffect 处理需要同步执行的副作用
+
+7. 使用 React.lazy 和 Suspense 进行代码分割:
+
+```jsx
+const OtherComponent = React.lazy(() => import("./OtherComponent"));
+```
+
+8. 列表渲染优化:
+
+- 正确使用 key 属性
+- 考虑使用虚拟化库如 react-window 或 react-virtualized
+
+9. 使用 Profiler API 进行性能分析:
+
+- 帮助识别性能瓶颈
+
+```jsx
+<Profiler id="MyComponent" onRender={callback}>
+  <MyComponent />
+</Profiler>
+```
+
+10. 使用新的 JSX 转换:
+
+- React 17 引入了新的 JSX 转换，不再需要显式导入 React
+
+11. 使用 useTransition 和 useDeferredValue (React 18+):
+
+- 用于处理非紧急更新，提高用户体验
+
+#### 1. useTransition
+
+useTransition 允许您将某些更新标记为非紧急，从而提高应用的响应性。
+
+- 场景：在一个搜索应用中，我们想在用户输入时立即更新搜索框，但延迟更新搜索结果，以避免在每次按键时都进行昂贵的搜索操作
+
+```jsx
+import React, { useState, useTransition } from "react";
+
+const searchAPI = (query) => {
+  // 模拟 API 调用
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(
+        Array(20)
+          .fill(query)
+          .map((item, index) => `${item} ${index + 1}`)
+      );
+    }, 1000);
+  });
+};
+
+function SearchApp() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [isPending, startTransition] = useTransition();
+
+  const handleSearch = async (e) => {
+    const newQuery = e.target.value;
+    setQuery(newQuery);
+
+    startTransition(async () => {
+      const searchResults = await searchAPI(newQuery);
+      setResults(searchResults);
+    });
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={query}
+        onChange={handleSearch}
+        placeholder="Search..."
+      />
+      {isPending && <p>Updating results...</p>}
+      <ul>
+        {results.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default SearchApp;
+```
+
+在这个例子中，点击按钮的更新被标记为非紧急。如果有其他更紧急的更新（如用户输入），React 会优先处理那些更新。
+
+#### 2. useDeferredValue
+
+- 场景：在一个数据可视化应用中，我们想要立即响应用户的输入，但延迟更新计算密集型的图表。
+
+```jsx
+import React, { useState, useDeferredValue, useMemo } from "react";
+
+// 假设这是一个计算密集型的组件
+function ExpensiveChart({ data }) {
+  const items = useMemo(() => {
+    // 模拟耗时计算
+    console.log("Calculating chart data...");
+    return data.map((i) => i * 2);
+  }, [data]);
+
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+
+function DataVisualization() {
+  const [data, setData] = useState([]);
+  const deferredData = useDeferredValue(data);
+
+  const handleDataChange = (e) => {
+    const newData = Array(10000)
+      .fill(0)
+      .map(() => Math.floor(Math.random() * e.target.value));
+    setData(newData);
+  };
+
+  return (
+    <div>
+      <input
+        type="number"
+        onChange={handleDataChange}
+        placeholder="Enter a number"
+      />
+      <ExpensiveChart data={deferredData} />
+    </div>
+  );
+}
+
+export default DataVisualization;
+```
+
+#### 3. useId
+
+- 场景：在一个表单中，我们需要为多个输入字段生成唯一的 ID，以确保正确的标签关联和可访问性。
+
+```jsx
+import React, { useId } from "react";
+
+function AccessibleForm() {
+  const id = useId();
+
+  return (
+    <form>
+      <div>
+        <label htmlFor={`${id}-name`}>Name:</label>
+        <input id={`${id}-name`} type="text" />
+      </div>
+      <div>
+        <label htmlFor={`${id}-email`}>Email:</label>
+        <input id={`${id}-email`} type="email" />
+      </div>
+      <div>
+        <label htmlFor={`${id}-password`}>Password:</label>
+        <input id={`${id}-password`} type="password" />
+      </div>
+    </form>
+  );
+}
+
+export default AccessibleForm;
+```
+
+#### 4. Suspense 和 lazy
+
+- 场景：在一个单页应用中，我们想要延迟加载某些组件以提高初始加载速度。
+
+```jsx
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
+
+const Home = lazy(() => import('./Home'));
+const About = lazy(() => import('./About'));
+const Contact = lazy(() => import('./Contact'));
+
+function App() {
+  return (
+    <Router>
+      <div>
+        <nav>
+          <ul>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/about">About</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
+          </ul>
+        </nav>
+
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </Suspense>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
+
+// Home.js
+export default function Home() {
+  return <h2>Home</h2>;
+}
+
+// About.js
+export default function About() {
+  return <h2>About</h2>;
+}
+
+// Contact.js
+export default function Contact() {
+  return <h2>Contact</h2>;
+}
+```
+
+其他：
+
+- 自动批处理：React 18 引入了自动批处理，可以将多个状态更新组合成一次重渲染，提高性能。这在大多数情况下是自动的，不需要额外的代码。
+- Concurrent Rendering：虽然这不是一个具体的 API，但它是 React 18 的一个重要特性。它允许 React 中断渲染以处理更高优先级的更新，从而提高应用的响应性。useTransition 和 useDeferredValue 就是基于这个特性的。
+
+## 21. React 中的合成事件是什么?
+
+React中的合成事件(Synthetic Events)是React对原生DOM事件的封装。它的 API 与浏览器的原生事件相同，包括`stopPropagation()`和`preventDefault()`
+
+- 主要特点和用途
+
+1. 跨浏览器标准化: React确保所有事件在不同浏览器中的行为一致 。
+2. 性能优化: React使用事件委托,将所有事件都绑定到文档根节点,而不是每个单独的元素。
+3. 自动绑定: 在类组件中,事件处理器会自动绑定到组件实例。
+4. 事件池: React重用事件对象以提高性能,所以事件对象属性在事件回调结束后会被清空。
+5. 支持异步访问: 如果需要异步访问事件属性,可以使用event.persist()方法。
+6. 命名约定: 使用驼峰命名法,如onClick而不是onclick。
+7. 传递函数: 传递函数作为事件处理器,而不是字符串。
+
+- 工作原理
+
+1. 事件委托: React并不直接将事件处理器附加到DOM节点。相反,它在文档的根级别使用单个事件监听器来处理所有事件
+2. 事件池: 为了提高性能,React维护一个事件对象池。当事件触发时,React从池中获取一个事件对象,填充相关信息,然后将其传递给事件处理器。事件处理完成后,对象会被重置并返回池中
+3. 事件规范化: React确保事件对象在不同浏览器中具有一致的属性
+4. 异步处理: 由于事件池的存在,如果你需要在异步操作中访问事件对象,需要调用`event.persist()`
+
+#### 处理表单输入
+
+```jsx
+function NameForm() {
+  const [name, setName] = React.useState("");
+
+  const handleChange = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault(); // 阻止表单默认提交行为
+    alert("A name was submitted: " + name);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Name:
+        <input type="text" value={name} onChange={handleChange} />
+      </label>
+      <input type="submit" value="Submit" />
+    </form>
+  );
+}
+```
+
+#### 使用event.persist()进行异步处理
+
+```jsx
+function DelayedLogger() {
+  const handleClick = (event) => {
+    event.persist(); // 允许在异步回调中访问事件属性
+    setTimeout(() => {
+      console.log(event.type); // 'click'
+    }, 1000);
+  };
+
+  return <button onClick={handleClick}>Click me</button>;
+}
+```
+
+#### 处理键盘事件
+
+```jsx
+function KeyDetector() {
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      console.log("Enter key pressed");
+    }
+  };
+
+  return <input onKeyPress={handleKeyPress} />;
+}
+```
+
+#### 阻止事件冒泡
+
+```jsx
+function StopPropagation() {
+  const handleParentClick = () => {
+    console.log("Parent clicked");
+  };
+
+  const handleChildClick = (event) => {
+    event.stopPropagation(); // 阻止事件冒泡到父元素
+    console.log("Child clicked");
+  };
+
+  return (
+    <div
+      onClick={handleParentClick}
+      style={{ padding: "20px", backgroundColor: "lightblue" }}
+    >
+      Parent
+      <button onClick={handleChildClick}>Child</button>
+    </div>
+  );
+}
+```
+
+#### 访问原生事件
+
+```jsx
+function NativeEventAccess() {
+  const handleClick = (event) => {
+    console.log("React synthetic event:", event);
+    console.log("Native DOM event:", event.nativeEvent);
+  };
+
+  return <button onClick={handleClick}>Click for native event</button>;
+}
+```
+
+## 22. 什么是 ReactDOMServer
+
+ReactDOMServer 是 React 库的一部分，它提供了将 React 组件渲染成静态 HTML 字符串的方法。这在服务器端渲染（SSR）中特别有用，可以提高首屏加载速度和搜索引擎优化（SEO）
+以下是 ReactDOMServer 的主要特点和用法：
+
+- 主要方法:
+
+1. `renderToString()`: 将 React 元素渲染为初始 HTML
+2. `renderToStaticMarkup()`: 类似于 renderToString，但不会创建额外的 DOM 属性，如 data-reactroot
+3. `renderToNodeStream()`: 返回一个可读流，输出 HTML 字符串。（仅在服务器环境中可用）
+4. `renderToStaticNodeStream()`: 类似于 renderToNodeStream，但不包含额外的 DOM 属性。（仅在服务器环境中可用）
+
+- 用途:
+
+1. 服务器端渲染（SSR）
+2. 生成静态网站
+3. 在非浏览器环境中渲染 React 组件
+
+```jsx
+import ReactDOMServer from "react-dom/server";
+import App from "./App";
+
+function handleRequest(req, res) {
+  const html = ReactDOMServer.renderToString(<App />);
+
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>My React App</title>
+      </head>
+      <body>
+        <div id="root">${html}</div>
+        <script src="/bundle.js"></script>
+      </body>
+    </html>
+  `);
+}
+```
+
+- 优势:
+
+1. 改善首屏加载时间
+2. 提高搜索引擎优化（SEO）表现
+3. 支持在不支持 JavaScript 的环境中使用 React
+
+- 注意事项:
+
+1. 服务器端渲染的组件应该是"同构"的，即可以在服务器和客户端都能运行
+2. 某些生命周期方法（如 componentDidMount）在服务器端不会被调用
+3. 需要注意服务器端和客户端状态的同步
+
+- 与`hydration`配合:
+  在客户端，通常会使用 ReactDOM.hydrate() 方法来"激活"服务器渲染的 HTML：
+
+```jsx
+import ReactDOM from "react-dom";
+import App from "./App";
+
+ReactDOM.hydrate(<App />, document.getElementById("root"));
+```
+
+- 性能考虑:
+  虽然服务器端渲染可以提高初始加载性能，但它也会增加服务器负载。在实际应用中，通常会结合缓存策略来优化性能。
+  总的来说，ReactDOMServer 是实现 React 服务器端渲染的核心工具，它允许开发者在服务器上生成 HTML 内容，从而提供更好的首屏体验和 SEO 优化。然而，使用服务器端渲染也会增加应用的复杂性，因此需要权衡其利弊，并根据具体项目需求来决定是否采用
+
+## 23. 有哪些流行的react特定的linters
+
+`eslint-plugin-react`:
+
+- 是一个专门为 React 项目设计的 ESLint 插件。它的主要功能包括
+
+1. 提供 React 特定的代码规则:
+
+- 检查 JSX 语法,验证 React 组件的结构和用法,检查 Hooks 的使用是否正确
+
+2. 帮助开发者遵循 React 最佳实践
+
+- 强制使用正确的组件命名规范,检查 props 的使用和验证,识别潜在的性能问题
+
+3. 提高代码质量
+
+- 检测常见的 React 相关错误,强制执行一致的编码风格
+
+4. 自定义规则
+
+- 允许团队根据项目需求配置和自定义规则
+
+5. 与 ESLint 生态系统集成
+
+## 24. 什么是 React Router？
+
+React Router 是一个基于 React 构建的强大的路由库，可帮助你添加新的屏幕并以极快的速度流向您的应用程序，同时保持 URL 与页面上显示的内容同步。
+允许您在单页应用（SPA）中实现动态路由，从而使用户可以在不同页面之间导航，而无需刷新整个页面。以下是 React Router 的一些主要特点：
+
+1. 声明式路由：使用 JSX 语法定义路由。
+2. 嵌套路由：支持创建复杂的路由结构。
+3. 动态路由匹配：可以使用参数来创建动态路由。
+4. 编程式导航：允许通过 JavaScript 代码控制导航。
+5. 历史管理：提供了对浏览器历史记录的访问和操作。
+6. 支持不同的路由模式：如哈希模式和浏览器历史模式。
+
+## 25. React Router与History库有何不同？
+
+React Router是历史库的包装器，它处理浏览器的`window.history`及其浏览器和缓存历史记录的交互。它还提供内存历史记录，对于没有全局记录历史的环境很有用，例如移动应用程序开发（React Native）并使用 Node 进行单元测试。
+总之就是History.js是Window.history API的一个包装，处理了很多浏览器的兼容等问题。而React Router又是History.js的一个包装，提供了声明式路由的能力。并更贴合React的开发模式。
+
+## 26. React为什么使用className属性而不是class属性作为类名？
+
+1. 避免与javascript关键字冲突，在javascript中class是一个保留关键字，用于定义类。
+2. 因为原生html定义类名使用的是class，而React中的jsx是javascript的语法扩展,避免和html类名操作冲突。有助于区分jsx特有的属性和标准html属性。
+
+```jsx
+// JSX
+<div className="my-class" onClick={handleClick}>
+  ...
+</div>;
+
+// 编译后的JavaScript
+React.createElement(
+  "div",
+  { className: "my-class", onClick: handleClick },
+  "..."
+);
+```
+
+3. 性能考虑和未来兼容性及跨平台性，因为不需要处理class同名的情况，对于未来不同平台下也保持其特有性，而且保持这种一致性有助于代码的可读性和可维护性。
+
+## 27. 什么是React createPortal?
+
+`React createPortal` 是一个允许我们将子组件渲染到父组件 DOM 树之外的其他 DOM 节点的方法。
+
+- 应用场景:
+
+1. 模态框（Modal）: 通常我们希望模态框渲染在页面的最顶层，而不是嵌套在当前组件树中.
+2. 工具提示（Tooltip）: 可能需要渲染在触发元素之外的位置.
+3. 悬浮卡片（Floating Card）: 类似于工具提示，但通常包含更多信息
+4. 下拉菜单（Dropdown）: 特别是当父容器有 overflow: hidden 时
+5. 通知消息（Notifications）: 通常显示在页面顶部或角落
+
+```jsx
+import React, { useState } from "react";
+import { createPortal } from "react-dom";
+
+function Modal({ children, onClose }) {
+  return createPortal(
+    <div className="modal-overlay">
+      <div className="modal-content">
+        {children}
+        <button onClick={onClose}>关闭</button>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function App() {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <div>
+      <button onClick={() => setShowModal(true)}>打开模态框</button>
+      {showModal && (
+        <Modal onClose={() => setShowModal(false)}>
+          <h2>这是一个模态框</h2>
+          <p>模态框内容...</p>
+        </Modal>
+      )}
+    </div>
+  );
+}
+```
+
+- 适合使用 createPortal 的情况:
+
+1. 需要突破当前 DOM 结构限制的场景
+2. 处理 z-index 和堆叠上下文问题
+3. 需要在视觉上和逻辑上分离的 UI 元素
+
+- 不适合使用 createPortal 的情况:
+
+1. 组件逻辑紧密耦合，需要共享上下文的场景
+2. 可能导致可访问性问题的情况，如屏幕阅读器可能难以理解 portal 内容
+3. 过度使用可能导致应用结构混乱，增加维护难度
+
+## 28. 如何在React中使用innerHTML?
+
+在React中使用innerHTML需要谨慎,因为它可能会带来安全风险。不过,在某些情况下使用innerHTML是必要的。以下是在React中使用innerHTML的方法:
+
+1. 使用dangerouslySetInnerHTML属性:
+
+```jsx
+function MyComponent() {
+  const htmlContent = "<p>这是一些<strong>HTML</strong>内容</p>";
+
+  return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
+}
+```
+
+2. 使用ReactDOM.renderToString:
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom";
+
+function MyComponent() {
+  const htmlContent = "<p>这是一些<strong>HTML</strong>内容</p>";
+
+  return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
+}
+
+const html = ReactDOM.renderToString(<MyComponent />);
+```
+
+3. 使用ReactDOM.renderToStaticMarkup:
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom";
+
+function MyComponent() {
+  const htmlContent = "<p>这是一些<strong>HTML</strong>内容</p>";
+
+  return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
+}
+
+const html = ReactDOM.renderToStaticMarkup(<MyComponent />);
+```
+
+4. 使用第三方库:
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom";
+import { renderHTML } from "react-html-parser";
+
+function MyComponent() {
+  const htmlContent = "<p>这是一些<strong>HTML</strong>内容</p>";
+
+  return <div>{renderHTML(htmlContent)}</div>;
+}
+```
+
+5. 使用ref和原生DOM操作:
+
+```jsx
+import React, { useEffect, useRef } from "react";
+
+function MyComponent() {
+  const divRef = useRef(null);
+
+  useEffect(() => {
+    if (divRef.current) {
+      divRef.current.innerHTML = "<p>这是一些<strong>HTML</strong>内容</p>";
+    }
+  }, []);
+
+  return <div ref={divRef} />;
+}
+```
+
+## 29. 如何实现服务器端渲染或 SSR？
+
+React已经具备处理Node服务器上渲染的能力。有一个特殊版本的DOM渲染器可用，它遵循与客户端相同的模式。
+
+```jsx
+import ReactDOMServer from "react-dom/server";
+import App from "./App";
+
+ReactDOMServer.renderToString(<App />);
+```
+
+此方法将常规HTML输出为字符串，然后可以将其作为服务器响应的一部分放在页面主体中。在客户端，React 会检测预渲染的内容并从中断处无缝继续。
+
+## 30. 为什么要将 ReactDOM 与 React 分离？
+
+React 团队致力于将所有与 DOM 相关的功能提取到一个名为ReactDOM的单独库中。React v0.14 是第一个将库拆分的版本。通过查看一些软件包`react-native`,`react-art`，`react-canvas`,可以清楚地发现,React的美妙之处和本质与浏览器或DOM无关。
+
+为了构建更多 React 可以渲染的环境，React 团队计划将主要的 React 包一分为二：react 和 react-dom。这为编写可以在 Web 版本的 React 和 React Native 之间共享的组件铺平了道路。
+
+## 31. 在React中常见的路由跳转有哪些？
+
+1. 使用 `useNavigate` hook (推荐在函数组件中使用):
+
+```jsx
+import { useNavigate } from "react-router-dom";
+
+function MyComponent() {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/about");
+  };
+
+  return <button onClick={handleClick}>Go to About</button>;
+}
+```
+
+2. 使用`Link`组件
+
+```jsx
+import { Link } from "react-router-dom";
+
+function MyComponent() {
+  return <Link to="/about">Go to About</Link>;
+}
+```
+
+3. 使用`Navigate`组件 (用于声明式导航):
+
+```jsx
+import { Navigate } from "react-router-dom";
+
+function MyComponent() {
+  const shouldRedirect = true;
+
+  if (shouldRedirect) {
+    return <Navigate to="/about" />;
+  }
+
+  return <div>Normal content</div>;
+}
+```
+
+4. 在类组件中使用`history` prop (需要使用 withRouter 高阶组件):
+
+```jsx
+import { withRouter } from "react-router-dom";
+
+class MyComponent extends React.Component {
+  handleClick = () => {
+    this.props.history.push("/about");
+  };
+
+  render() {
+    return <button onClick={this.handleClick}>Go to About</button>;
+  }
+}
+
+export default withRouter(MyComponent);
+```
+
+5. 使用`useHistory` hook (在React Router v5中):
+
+```jsx
+import { useHistory } from "react-router-dom";
+
+function MyComponent() {
+  const history = useHistory();
+
+  const handleClick = () => {
+    history.push("/about");
+  };
+
+  return <button onClick={handleClick}>Go to About</button>;
+}
+```
+
+这些方法中`useNavigate`hook和`Link`组件是最常用和推荐的方法。`useNavigate`适用于需要编程式导航的场景，而`Link`适用于简单的声明式导航。
+需要注意的是，这些方法都假设你已经正确设置了React Router。确保你的应用已经被 BrowserRouter 或 HashRouter 包裹，并且已经定义了相应的路由
+
