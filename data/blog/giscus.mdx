@@ -1,0 +1,39 @@
+---
+title: Giscus Comment System
+date: '2024-08-01'
+tags: ['giscus','']
+draft: false
+summary: Giscus 评论系统
+---
+
+
+> 打开 Giscus 评论系统网站
+<a href='https://giscus.app/zh-CN' target="_blank">Giscus</a>
+
+
+- 第一步：在这里输入你的仓库地址 上面的条件要满足 具体看文档
+
+![img1](/static/images/giscus-image1.png)
+
+
+- 第二步：按步骤填写完 下面会有个配置文件
+```jsx
+<script src="https://giscus.app/client.js"
+        data-repo="[在此输入仓库]"
+        data-repo-id="[在此输入仓库 ID]"
+        data-category="[在此输入分类名]"
+        data-category-id="[在此输入分类 ID]"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+```
+
+最后：把生成的内容 复制到你的博客中 就可以了
