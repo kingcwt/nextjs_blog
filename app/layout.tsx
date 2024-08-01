@@ -108,6 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </SectionContainer>
         </ThemeProviders>
       </body>
+      {/* <script defer src="https://cloud.umami.is/script.js" data-website-id="9a2c64aa-11ca-4ac6-9191-74893a3b7d3c"></script> */}
     </html>
   )
 }
