@@ -1,0 +1,89 @@
+---
+title: Chrome Extend
+date: '2024-08-08'
+tags: ['chrome', 'extension']
+draft: false
+summary: Chrome Extend
+---
+
+<TOCInline toc={props.toc} exclude="Introduction" />
+
+
+##  侧边栏扩展demo  
+> 说明：这里主要是实现一个侧边栏扩展demo，当用户按下快捷键`Ctrl+B`时，打开/关闭侧边栏，当用户点击图标是时，打开/关闭侧边栏。
+
+- 首先在一个新的文件夹下 创建一个`manifest.json`文件，内容如下：
+
+```json
+{
+  "manifest_version": 3,
+  "name": "My side panel extension demo",
+  "version": "1.1",
+  "description": "Demo for side panel extension",
+  "background": {
+    "service_worker": "service-worker.js",
+    "matches": ["<all_urls>"]
+  },
+  "action": {
+    "default_title": "Click to open panel"
+  },
+  "permissions": ["sidePanel", "tabs", "commands"],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+B",
+        "mac": "Command+B"
+      }
+    }
+  },
+  "icons": {
+    "16": "images/icon-16.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  }
+}
+
+```
+- 然后创建一个`service-worker.js`的js文件，内容如下：  
+```js
+// const GOOGLE_ORIGIN = "https://www.google.com";
+
+chrome.commands.onCommand.addListener((command) => {
+  console.log("Command:", command); // 检查是否捕获到快捷键事件
+  if (command === "_execute_action") {
+    // 执行打开侧边栏的代码
+    chrome.sidePanel.open({ panel: "sidepanel.html" });
+  }
+});
+
+chrome.sidePanel
+  .setPanelBehavior({ openPanelOnActionClick: true })
+  .catch((error) => console.error(error));
+
+chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
+  await chrome.sidePanel.setOptions({
+    tabId,
+    path: "sidepanel.html",
+    enabled: true,
+  });
+});
+```
+
+- 然后，我们还需要一个sidepanel.html
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Sidepanel</title>
+  </head>
+  <body>
+    <h1>All sites sidepanel extension</h1>
+    <p>This side panel is enabled on all sites</p>
+  </body>
+</html>
+```
+
+- 最后，我们还需要一个`images`文件夹，里面放一些图标，然后在`manifest.json`中引用这些图标。具体的文件地址可以点击[这里](https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/functional-samples/tutorial.reading-time/images)查看。
+
+
+**自此：侧边栏扩展开发完成，具体的可以参考官方文档：[Chrome 侧边栏官方示例](https://developer.chrome.com/docs/extensions/reference/api/sidePanel?hl=zh-cn)**
