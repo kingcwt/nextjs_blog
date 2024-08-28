@@ -1330,3 +1330,101 @@ function MyComponent() {
 这些方法中`useNavigate`hook和`Link`组件是最常用和推荐的方法。`useNavigate`适用于需要编程式导航的场景，而`Link`适用于简单的声明式导航。
 需要注意的是，这些方法都假设你已经正确设置了React Router。确保你的应用已经被 BrowserRouter 或 HashRouter 包裹，并且已经定义了相应的路由
 
+
+
+## 32. [项目问题] 
+### 32.1 如何优雅的实现路由的回跳
+- `简单`
+
+场景：我现在有一个页面，页面上有个tab切换，不同的tab下对应的不同的列表页面。然后列表都有一个查看的操作。点击查看跳转到另一个列表页面。这个列表页面和跳转前的页面是父子页面的关系。然后需要在这个子列表页面加一个导航，点击导航要跳转回到上一个页面，并且要恢复到跳转前的tab标签下。这个是在在配置router路由的时候配置的。需要用到Link标签。    
+
+需求：我不想在地址栏里面拼接。也不想存在本地。并且也不想使用全局状态之类的，并且我跳转回到对应的tab下。刷新页面也会恢复到初始进入这个页面的状态。我应该如何实现？   
+
+
+如图：
+![img1](/static/images/core_react_project_1.jpg)
+![img2](/static/images/core_react_project_2.jpg)
+![img3](/static/images/core_react_project_3.jpg)
+
+
+
+
+参考答案：
+```tsx
+// 路由配置
+    const renderState = (path: string): { activeTab: string } | {} => {
+      if (path === '/config/orgManagement' && type) {
+        return {
+          activeTab: type,
+        };
+      }
+      return {}
+    }
+    for (let i = 0; i < routes.length; i++) {
+      const route = routes[i]
+
+      if (location.pathname.startsWith(route.path)) {
+        matchedRoutes.push({
+          title:
+            route.element && route.path !== location.pathname ? (
+              <Link to={route.path} state={renderState(route.path)}>{route.label}</Link>
+            ) : (
+              route.label
+            ),
+        })
+        if (route.children?.length) {
+          loopThroughRouting(route.children, matchedRoutes)
+        }
+      }
+    }
+```
+
+```tsx
+import API from "./API"
+import Database from "./Database"
+import { Tabs, type TabsProps } from 'antd'
+import './index.less'
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+
+export default function OrgManagement() {
+  const location = useLocation();
+  console.log(location, 'locationlocation');
+  const [activeKey, setActiveKey] = useState('1')
+  const navigate = useNavigate();
+
+  const items: TabsProps['items'] = [
+    {
+      key: '1',
+      label: '数据库',
+      children: <Database />,
+    },
+    {
+      key: '2',
+      label: 'API',
+      children: <API />,
+    },
+  ]
+
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      const { activeTab } = location.state
+      setActiveKey(activeTab === 'api' ? '2' : '1')
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [])
+
+  return (
+    <div className="orgManagement">
+      <Tabs
+        activeKey={activeKey}
+        onChange={key => setActiveKey(key)}
+        className="tabs"
+        items={items}
+      />
+    </div>
+  )
+
+} 
+```
