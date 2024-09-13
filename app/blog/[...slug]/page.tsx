@@ -27,6 +27,7 @@ export async function generateMetadata({
   params: { slug: string[] }
 }): Promise<Metadata | undefined> {
   const slug = decodeURI(params.slug.join('/'))
+  console.log(allBlogs,'allBlogsallBlogs')
   const post = allBlogs.find((p) => p.slug === slug)
   const authorList = post?.authors || ['default']
   const authorDetails = authorList.map((author) => {
@@ -53,6 +54,7 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.summary,
+    keywords:'wqdqwd',
     openGraph: {
       title: post.title,
       description: post.summary,
@@ -90,6 +92,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const prev = sortedCoreContents[postIndex + 1]
   const next = sortedCoreContents[postIndex - 1]
   const post = allBlogs.find((p) => p.slug === slug) as Blog
+  console.log(post,'post')
   const authorList = post?.authors || ['default']
   const authorDetails = authorList.map((author) => {
     const authorResults = allAuthors.find((p) => p.slug === author)

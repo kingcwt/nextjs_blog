@@ -142,3 +142,8 @@
 .token.table {
   display: inline;
 }
+
+code::after,
+code::before {
+  content: none !important;
+}

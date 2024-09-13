@@ -37,6 +37,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
     <SectionContainer>
       <ScrollTopAndComment />
       <article>
+        {/* {JSON.stringify(content)} */}
         <div className="xl:divide-y xl:divide-gray-200 xl:dark:divide-gray-700">
           <header className="pt-6 xl:pb-6">
             <div className="space-y-1 text-center">
@@ -52,6 +53,9 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
               </dl>
               <div>
                 <PageTitle>{title}</PageTitle>
+                {/* <div className="m-4 flex items-center justify-center">
+                  <img src={'/static/images/avatar.png'} />
+                </div> */}
               </div>
             </div>
           </header>
