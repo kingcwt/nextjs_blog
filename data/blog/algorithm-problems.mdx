@@ -1,7 +1,7 @@
 ---
 title: 基础算法题
 date: '2018-07-25'
-tags: ['algorithm', 'web']
+tags: ['algorithm', 'interview']
 draft: false
 coverImg: '/static/images/react-core.jpg'
 summary: '基础算法题'
@@ -37,4 +37,42 @@ const result = function getPrimes(arr) {
 
 console.log(result(numbers)) // [2,3,5,7,11,13]
 
+```
+
+其他答案：
+```js
+// 面试者1
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+const main = (arr) => {
+  return arr.filter((item) => {
+    if (item <= 1) return false
+    let count = 0
+    for (let i = 1; i < item; i++) {
+      if (item % i === 0) {
+        count++
+      }
+    }
+    return count < 2
+  })
+}
+
+console.log(main(numbers))
+```
+
+```js
+// 面试者2
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+const main = (arr) => {
+  return arr.filter((item) => {
+    if (item <= 1) return false
+    for (let i = 2; i < item; i++) {
+      if (item % i === 0) {
+        return false
+      }
+    }
+    return true
+  })
+}
+
+console.log(main(numbers))
 ```

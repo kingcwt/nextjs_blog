@@ -22,7 +22,6 @@ export default function Page({ params }: { params: { page: string } }) {
     currentPage: pageNumber,
     totalPages: Math.ceil(posts.length / POSTS_PER_PAGE),
   }
-
   return (
     <ListLayout
       posts={posts}
