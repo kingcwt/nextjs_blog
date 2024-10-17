@@ -1,0 +1,195 @@
+---
+title: React 项目开发 小记
+date: '2024-10-17'
+tags: ['react','dev']
+draft: false
+summary: 记录项目开发中一些常见的功能实现
+---
+
+<TOCInline toc={props.toc} exclude="Introduction" />
+
+## 列表页面跳转详情页 点击返回列表页 保存 列表参数和分页 【仅供参考】
+
+
+假如 列表页和详情页面长这样
+![img1](/static/images/zx_t1.jpg)
+![img2](/static/images/zx_t2.jpg)
+
+
+需求：
+> 点击查看后 保存列表的搜索参数和分页选择
+
+- 注意1: 复制详情页面地址 点击返回列表页 还原列表参数和分页  
+
+- 注意2: 点击返回列表页面 保存参数后 这个时候再次点击查看操作 跳转详情 再返回列表页面 也是上一步状态
+- 注意3: 我刷新列表页面 还原最初的进列表页面的状态  
+
+
+好，开始实现
+
+首先第一步 不管搜索，分页 都要存在一状态里面，如果搜索变化或者分页变化 只会修改状态。然后监听状态的变化，除非请求后端接口数据  
+
+
+
+#### 首先 定义分页和搜索参数的状态 还要定义一个ref存数据，因为在antd中点击操作 有些情况下不会拿到最新的状态 所以这里使用ref
+```tsx
+interface PageParamsType {
+  templateId?: number // 选择的模板
+  writeStatus?: string // 处理状态
+  reportName?: string // 搜索的文档名称 
+  pageNo: number // 分页
+  pageSize: number // 页数
+}
+// 定义 搜索需要的状态
+const [pageParams, setPageParams] = useState<PageParamsType>({ pageNo: 1, pageSize: 10 })
+// 把状态存在pageParamsRef中 因为有些情况下 状态不会拿到最新的 所以使用ref
+const pageParamsRef = useRef<PageParamsType>({ pageNo: 1, pageSize: 10 })
+```
+
+#### 参考搜索方法的代码
+```tsx
+// 搜索方法代码
+// 我们设置更新 setPageParams
+ const handleSearch = (value: string, type: string) => {
+    const { writeStatus } = searchForm.getFieldsValue()
+    const params: Omit<GetDBDocumentParamsType, 'pageNo' | 'pageSize'> = {}
+    const formItem = searchForm.getFieldsValue()
+    if (writeStatus) {
+      params.writeStatus = writeStatus
+      pageParamsRef.current.writeStatus = writeStatus
+    } else {
+      delete params.writeStatus
+      const newPam = { ...pageParamsRef.current }
+      delete newPam.writeStatus
+      pageParamsRef.current = newPam
+    }
+
+    if (formItem?.templateId) {
+      pageParamsRef.current.templateId = formItem?.templateId
+      params.templateId = formItem?.templateId
+    } else {
+      delete params.templateId
+      const newPam = { ...pageParamsRef.current }
+      delete newPam.templateId
+      pageParamsRef.current = newPam
+    }
+
+    if (id) {
+      params.projectId = Number(id)
+    }
+
+    if (type === 'search') {
+      params.reportName = value
+    } else {
+      params.reportName = searchValue
+    }
+
+    pageParamsRef.current.reportName = params.reportName
+    pageParamsRef.current.pageNo = 1
+    pageParamsRef.current.pageSize = 10
+
+    setPageParams({ pageNo: 1, pageSize: 10, ...params })
+  }
+```
+
+#### 然后是分页操作方法
+
+```tsx
+// 同样是更新 setPageParams
+ const pageChange = (page: number, pageSize: number) => {
+    pageParamsRef.current.pageNo = page
+    pageParamsRef.current.pageSize = pageSize
+    setPageParams({ ...pageParams, pageNo: page, pageSize })
+  }
+```
+
+#### ok,接下来是定义状态更新 请求后端接口
+
+```tsx
+import { useRequest } from 'ahooks'
+import { getDBDocument } from '@/services/bondUnderwriting.service'
+
+const { data, error, loading, run } = useRequest(getDBDocument, {
+    manual: true,
+    pollingInterval: 5000,
+    loadingDelay: 5000,
+  })
+
+  useEffect(() => {
+    if (id) {
+     // 这里当搜索或者分页触发是 状态变化 请求后端接口   
+      run({ projectId: Number(id), ...pageParams })
+     // 同样存到ref中
+      pageParamsRef.current = { ...pageParams }
+    }
+  }, [id, pageParams])
+```
+### 然后 就是列表页面的查看操作方法啦。
+
+```tsx
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+const navigator = useNavigate()
+const location = useLocation()
+
+// 然后这里 跳转详情 把ref的值 存到地址栏中 这里其实有个缺陷 就是如果数据太长 会有丢失问题哦。【要注意】
+const onView = (item: GetDBDocumentListType) => {
+    const state = { ...pageParamsRef.current, from: location.pathname + location.search }
+    navigator(`/document/detail/${item.fileId}/${item.id}/edit?writeStatus=${item.writeStatus}&groupId=${item.groupId}&state=${encodeURIComponent(JSON.stringify(state))}`)
+}
+
+```
+
+
+#### 接下来是 详情页面 点击返回操作的代码
+
+```tsx
+import { useNavigate, useSearchParams } from 'react-router-dom'
+const [searchparams] = useSearchParams()
+const stateStr = searchparams.get('state')
+
+// OK 这里点击返回 把地址参数转换 然后跳转到列表页面
+const onComeBack = () => {
+if (stateStr) {
+    const state = JSON.parse(decodeURIComponent(stateStr))
+    navigator(state.from, { state })
+}
+}
+
+```
+
+
+#### 最后，我们在列表页面接受详情页面传过来保存的状态
+
+
+```tsx
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+const location = useLocation()
+const { id, menuType } = useParams()
+  // id这里不用管，给实现无关
+
+// 然后我们通过location,拿到保存的状态 然后设置 比如左侧的搜索 我这里是Form表单 所以直接通过setFieldsValue设置 模板id,状态下拉的值，然后搜索的值是状态，这里setSearchValue
+  useEffect(() => {
+    if (id) {
+      if (location.state) {
+        const newObj = { ...location.state }
+        delete newObj.from
+        // 设置保存
+        setPageParams({ pageNo: 1, pageSize: 10, ...newObj })
+        // 然后这里清空跳转state,下次刷新将是初始化的状态 
+        navigator(location.pathname, { replace: true, state: {} })
+      }
+      if (location.state.templateId) {
+        searchForm.setFieldsValue({
+          templateId: location.state.templateId,
+        })
+      }
+      if (location.state.writeStatus) {
+        searchForm.setFieldsValue({
+          writeStatus: location.state.writeStatus,
+        })
+      }
+      setSearchValue(location.state.reportName || '')
+    }
+  }, [])
+
+```
