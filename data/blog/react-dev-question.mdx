@@ -8,8 +8,7 @@ summary: 记录项目开发中一些常见的功能实现
 
 <TOCInline toc={props.toc} exclude="Introduction" />
 
-## 列表页面跳转详情页 点击返回列表页 保存 列表参数和分页 【仅供参考】
-
+## 1. 列表页面跳转详情页 点击返回列表页 保存 列表参数和分页 【仅供参考】
 
 假如 列表页和详情页面长这样
 ![img1](/static/images/zx_t1.jpg)
@@ -191,5 +190,109 @@ const { id, menuType } = useParams()
       setSearchValue(location.state.reportName || '')
     }
   }, [])
+
+```
+
+
+
+
+## 2. 实现表格复制和文本复制 【仅供参考】
+
+```ts
+
+// 复制表格
+function copyTableWithStyle(id:string) {
+  const table: any = document.querySelector(`.className_${id}`)
+  // 创建一个新的div来存放表格
+  const container = document.createElement('div')
+
+  // 克隆表格并保留所有样式
+  const tableClone = table.cloneNode(true)
+
+  // 获取原表格的计算样式并应用
+  const computedStyle = window.getComputedStyle(table)
+  tableClone.style.cssText = computedStyle.cssText
+
+  // 复制所有单元格的样式
+  const originalCells = table.querySelectorAll('th, td')
+  const clonedCells = tableClone.querySelectorAll('th, td')
+
+  originalCells.forEach((cell: any, index: number) => {
+    const computedCellStyle = window.getComputedStyle(cell)
+    clonedCells[index].style.cssText = computedCellStyle.cssText
+  })
+
+  // 复制所有行的样式
+  const originalRows = table.querySelectorAll('tr')
+  const clonedRows = tableClone.querySelectorAll('tr')
+
+  originalRows.forEach((row: any, index: number) => {
+    const computedRowStyle = window.getComputedStyle(row)
+    clonedRows[index].style.cssText = computedRowStyle.cssText
+  })
+
+  container.appendChild(tableClone)
+
+  // 将容器添加到文档中（设置为不可见）
+  container.style.position = 'fixed'
+  container.style.left = '-9999px'
+  container.style.top = '0'
+  document.body.appendChild(container)
+
+  // 选择内容
+  const range = document.createRange()
+  range.selectNode(container)
+  const selection = window.getSelection()
+  selection!.removeAllRanges()
+  selection!.addRange(range)
+
+  try {
+    // 执行复制命令
+    const successful = document.execCommand('copy')
+    if (successful) {
+      message.success('表格已复制到剪贴板')
+    } else {
+      message.success('复制失败')
+    }
+  } catch (err) {
+    message.error('复制出错:', err as any)
+  }
+
+  // 清理
+  selection!.removeAllRanges()
+  document.body.removeChild(container)
+}
+
+// # 复制文本
+const onProcessingText = (item: any) => {
+  if (navigator.clipboard) {
+    console.log('in navigator.clipboard')
+    message.success('已复制数据至剪贴板')
+    return navigator.clipboard.writeText(item.materialData) // 要复制的内容 item.materialData
+  }
+
+  const input = document.createElement('input')
+  input.setAttribute('value', item.materialData)
+  document.body.appendChild(input)
+  input.select()
+  try {
+    document.execCommand('copy')
+    message.success('复制成功')
+  } catch (err) {
+    message.error('复制失败', err as any)
+  }
+  document.body.removeChild(input)
+}
+
+// main 
+const onCopy = async (item: any, id: any) => {
+  // 表格
+  if (item.materialType === 'table') {
+    copyTableWithStyle(id)
+  } else {
+    // 文本
+    onProcessingText(item)
+  }
+}
 
 ```
