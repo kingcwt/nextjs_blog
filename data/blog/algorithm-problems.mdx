@@ -107,6 +107,36 @@ console.log(b); // 输出 5
  - 如果找到任何一个除数，则不是素数。
  - 如果没有找到任何除数，则是素数。
 
+
+ ```js
+//  最新一次更新时间为：2025-04-17
+ const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+const isPrime = (num) =>{
+    // 1 直接排除
+    if(num === 1) return false
+    // 2 直接返回true
+    if(num === 2) return true
+    // 排除偶数 能被2整除一定不是素数
+    if(num % 2 ===0) return false
+    // 遍历奇数 从3开始。这里这个num一定是奇数 
+    for(let i = 3; i<=Math.sqrt(num);i+=2){
+        if(num % i ===0) return false 
+    }
+    return true
+}
+
+const findPrime = (nums) =>{
+
+   return nums.filter((i)=>isPrime(i))
+}
+
+
+const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+const result = findPrime(nums)
+console.log(result)
+```
+
 ```js
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
