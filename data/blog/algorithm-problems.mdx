@@ -12,6 +12,107 @@ summary: '基础算法题'
 
 
 
+
+## 找出这个数组中的所有素数
+
+- `1 什么是素数？`   
+素数（质数）是指在大于1的自然数中，除了1和它本身以外不再有其他因数的自然数。换句话说，素数只能被1和自己整除。
+
+
+- `2 判断一个数是否为素数的基本方法是：`
+ - 如果数小于2，它不是素数。
+ - 从2开始，一直到这个数的平方根，检查是否有任何数能整除它。
+ - 如果找到任何一个除数，则不是素数。
+ - 如果没有找到任何除数，则是素数。
+
+
+ ```js
+//  最新一次更新时间为：2025-04-17
+ const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+const isPrime = (num) =>{
+    // 1 直接排除
+    if(num === 1) return false
+    // 2 直接返回true
+    if(num === 2) return true
+    // 排除偶数 能被2整除一定不是素数
+    if(num % 2 ===0) return false
+    // 遍历奇数 从3开始。这里这个num一定是奇数 
+    for(let i = 3; i<=Math.sqrt(num);i+=2){
+        if(num % i ===0) return false 
+    }
+    return true
+}
+
+const findPrime = (nums) =>{
+
+   return nums.filter((i)=>isPrime(i))
+}
+
+
+const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+const result = findPrime(nums)
+console.log(result)
+```
+
+```js
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+function isPrime(num) {
+  if (num <= 1) return false
+  for (let i = 2; i <= Math.sqrt(num); i++) {
+    if (num % i === 0) return false
+  }
+  return true
+}
+
+const result = function getPrimes(arr) {
+  return arr.filter(isPrime)
+}
+
+console.log(result(numbers)) // [2,3,5,7,11,13]
+
+```
+
+其他答案：
+```js
+// 面试者1
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+const main = (arr) => {
+  return arr.filter((item) => {
+    if (item <= 1) return false
+    let count = 0
+    for (let i = 1; i < item; i++) {
+      if (item % i === 0) {
+        count++
+      }
+    }
+    return count < 2
+  })
+}
+
+console.log(main(numbers))
+```
+
+```js
+// 面试者2
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+const main = (arr) => {
+  return arr.filter((item) => {
+    if (item <= 1) return false
+    for (let i = 2; i < item; i++) {
+      if (item % i === 0) {
+        return false
+      }
+    }
+    return true
+  })
+}
+
+console.log(main(numbers))
+```
+
+
 ## Marscode 1. 找单独的数
 
 #### 问题描述
@@ -171,101 +272,57 @@ main();
 
 ```
 
-## 找出这个数组中的所有素数
-
-- `1 什么是素数？`   
-素数（质数）是指在大于1的自然数中，除了1和它本身以外不再有其他因数的自然数。换句话说，素数只能被1和自己整除。
 
 
-- `2 判断一个数是否为素数的基本方法是：`
- - 如果数小于2，它不是素数。
- - 从2开始，一直到这个数的平方根，检查是否有任何数能整除它。
- - 如果找到任何一个除数，则不是素数。
- - 如果没有找到任何除数，则是素数。
+## Marscode 3. 数字字符串格式化
+
+#### 问题描述
+
+小M在工作时遇到了一个问题，他需要将用户输入的不带千分位逗号的数字字符串转换为带千分位逗号的格式，并且保留小数部分。小M还发现，有时候输入的数字字符串前面会有无用的 0，这些也需要精简掉。请你帮助小M编写程序，完成这个任务。
 
 
- ```js
-//  最新一次更新时间为：2025-04-17
- const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+#### 测试样例
 
-const isPrime = (num) =>{
-    // 1 直接排除
-    if(num === 1) return false
-    // 2 直接返回true
-    if(num === 2) return true
-    // 排除偶数 能被2整除一定不是素数
-    if(num % 2 ===0) return false
-    // 遍历奇数 从3开始。这里这个num一定是奇数 
-    for(let i = 3; i<=Math.sqrt(num);i+=2){
-        if(num % i ===0) return false 
-    }
-    return true
-}
-
-const findPrime = (nums) =>{
-
-   return nums.filter((i)=>isPrime(i))
-}
-
-
-const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-const result = findPrime(nums)
-console.log(result)
-```
-
-```js
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-
-function isPrime(num) {
-  if (num <= 1) return false
-  for (let i = 2; i <= Math.sqrt(num); i++) {
-    if (num % i === 0) return false
-  }
-  return true
-}
-
-const result = function getPrimes(arr) {
-  return arr.filter(isPrime)
-}
-
-console.log(result(numbers)) // [2,3,5,7,11,13]
+- 样例1
 
 ```
-
-其他答案：
-```js
-// 面试者1
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-const main = (arr) => {
-  return arr.filter((item) => {
-    if (item <= 1) return false
-    let count = 0
-    for (let i = 1; i < item; i++) {
-      if (item % i === 0) {
-        count++
-      }
-    }
-    return count < 2
-  })
-}
-
-console.log(main(numbers))
+输入：s = "1294512.12412"
+输出：'1,294,512.12412'
 ```
 
+- 样例2
+
+```
+输入：s = "0000123456789.99"
+输出：'123,456,789.99'
+```
+
+- 样例3
+
+```
+输入：s = "987654321"
+输出：'987,654,321'
+```
+### 解题
 ```js
-// 面试者2
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-const main = (arr) => {
-  return arr.filter((item) => {
-    if (item <= 1) return false
-    for (let i = 2; i < item; i++) {
-      if (item % i === 0) {
-        return false
-      }
+function solution(s) {
+    // PLEASE DO NOT MODIFY THE FUNCTION SIGNATURE
+    // write code here
+    
+    const [intPart,decPart] = s.split('.')
+    let result = intPart.replace(/(^0+)/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',')
+    if(decPart){
+        result=  result+'.'+decPart
     }
-    return true
-  })
+    return result ;
 }
 
-console.log(main(numbers))
+function main() {
+    console.log(solution("1294512.12412") === '1,294,512.12412');
+    console.log(solution("0000123456789.99") === '123,456,789.99');
+    console.log(solution("987654321") === '987,654,321');
+    console.log(solution("77134900601876576"))
+}
+
+main();
 ```
