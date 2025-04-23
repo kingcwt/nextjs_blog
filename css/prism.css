@@ -177,3 +177,6 @@ code {
 pre {
   background: #1f2328 !important;
 }
+img{
+  border: 1px solid #ddd;
+}
