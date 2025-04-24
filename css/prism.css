@@ -177,6 +177,21 @@ code {
 pre {
   background: #1f2328 !important;
 }
-img{
+img {
   border: 1px solid #ddd;
+}
+
+html.light
+  .prose
+  :where(ul > li):not(:where([class~='not-prose'], [class~='not-prose'] *))::marker {
+  color: #3f51b5;
+}
+
+th,
+td {
+  text-align: left !important;
+}
+
+p{
+  /* margin-bottom: 0!important; */
 }
