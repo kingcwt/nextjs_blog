@@ -12,11 +12,7 @@ const HiddenContent = ({ children }) => {
       >
         {isVisible ? '隐藏答案' : '显示答案'}
       </button>
-      {isVisible && (
-        <div className="mt-4 rounded border border-gray-200 p-4" style={{ background: '#fdfdfd' }}>
-          {children}
-        </div>
-      )}
+      {isVisible && <div className="mt-4 rounded border border-gray-200 p-4">{children}</div>}
     </div>
   )
 }
